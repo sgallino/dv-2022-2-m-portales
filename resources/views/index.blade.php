@@ -1,39 +1,24 @@
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Proyecto Laravel</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/app.css">
-</head>
-<body>
-    <div id="app">
-        <nav class="navbar navbar-expand-lg bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">DV Películas</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Mostrar/Ocultar Navegación">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="quienes-somos">Quiénes somos</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <main class="container py-3">
-            <h1>Hola</h1>
-        </main>
-        <footer class="footer">
-            <p>Da Vinci &copy; 2022</p>
-        </footer>
-    </div>
-</body>
-</html>
+{{-- "Heredamos/extendemos" el layout que definimos en [layouts/main.blade.php] con ayuda de la directiva
+@extends().
+Noten que para indicar el layout pasamos como parámetro al @extends un string con la ruta, pero reemplazando
+las "/" con ".", y omitiendo las extensiones (".blade.php").
+--}}
+@extends('layouts.main')
+
+{{--@section('title') Página principal @endsection--}}
+@section('title', 'Página principal')
+
+{{-- Por defecto, cualquier contenido que este archivo tenga luego de un @extends va a imprimirse _antes_
+del contenido del archivo extendido. Por ejemplo, antes de lo que sería el <!doctype html>.
+Ahí es donde entra en juego la directiva @yield que pusimos en el template.
+Como dijimos en el layout, @yield define un espacio que es cedido para que las vistas que hereden el
+template puedan usar para imprimir su contenido.
+Para usarlo, debemos ayudarnos con las directivas
+    @section(name)
+        ...
+    @endsection
+Donde "name" sería el nombre que definió el @yield().
+--}}
+@section('main')
+    <h1>Hola</h1>
+@endsection

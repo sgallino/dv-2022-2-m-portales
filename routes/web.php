@@ -64,3 +64,4 @@ use Illuminate\Support\Facades\Route;
  */
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index']);
 Route::get('quienes-somos', [\App\Http\Controllers\HomeController::class, 'about']);
+Route::get('admin/peliculas', [\App\Http\Controllers\AdminPeliculasController::class, 'index']);
