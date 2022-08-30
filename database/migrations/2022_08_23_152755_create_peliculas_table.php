@@ -52,6 +52,7 @@ return new class extends Migration
             // una mayor precisión a la hora de operar aritméticamente con los valores. Las operaciones con
             // enteros son mucho más precisas que las operaciones con números flotantes (con decimales).
             // Por eso, guardamos como entero el precio, y lo guardamos en "centavos".
+//            $table->integer('precio')->unsigned();
             $table->unsignedInteger('precio');
             $table->date('fecha_estreno');
             $table->text('sinopsis');

@@ -14,20 +14,20 @@
             <div class="container-fluid">
                 <?php   // La función url() crea una URL absoluta a la carpeta "public" del proyecto, de
                         // manera dinámica. ?>
-                <a class="navbar-brand" href="{{ url('/') }}">DV Películas</a>
+                <a class="navbar-brand" href="{{ route('home') }}">DV Películas</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Mostrar/Ocultar Navegación">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url('/') }}">Home</a>
+                            <a class="nav-link" href="{{ route('home') }}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url('quienes-somos') }}">Quiénes somos</a>
+                            <a class="nav-link" href="{{ route('quienes-somos') }}">Quiénes somos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url('admin/peliculas') }}">Administrar Películas</a>
+                            <a class="nav-link" href="{{ route('admin.peliculas.index') }}">Administrar Películas</a>
                         </li>
                     </ul>
                 </div>

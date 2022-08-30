@@ -59,9 +59,29 @@ use Illuminate\Support\Facades\Route;
 //    return view('welcome');
 //});
 /*
- * Par indicar el método de un controller, pasamos un array como segundo parámetro, donde la primer
+ * Para indicar el método de un controller, pasamos un array como segundo parámetro, donde la primera
  * clave debe ser el nombre completo (FQN) del Controller, y el segundo el nombre del método.
  */
-Route::get('/', [\App\Http\Controllers\HomeController::class, 'index']);
-Route::get('quienes-somos', [\App\Http\Controllers\HomeController::class, 'about']);
-Route::get('admin/peliculas', [\App\Http\Controllers\AdminPeliculasController::class, 'index']);
+/*
+ * Opcionalmente, y de manera recomendada, podemos a cada ruta asignarle un nombre único.
+ * Este nombre puede ser similar a la URL de la ruta o no, y es de uso exclusivamente interno en nuestro
+ * código (es decir, no se renderiza en el HTML ni nada).
+ * Nos permite ponerle una suerte de "id" a cada ruta, con el que Laravel nos va a permitir referirnos a
+ * ella sin importar de cuál sea la URL que le corresponda.
+ */
+Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])
+    ->name('home');
+Route::get('quienes-somos', [\App\Http\Controllers\HomeController::class, 'about'])
+    ->name('quienes-somos');
+
+/*
+ |--------------------------------------------------------------------------
+ | Películas
+ |--------------------------------------------------------------------------
+ */
+Route::get('admin/peliculas', [\App\Http\Controllers\AdminPeliculasController::class, 'index'])
+    ->name('admin.peliculas.index');
+Route::get('admin/peliculas/nueva', [\App\Http\Controllers\AdminPeliculasController::class, 'nuevaForm'])
+    ->name('admin.peliculas.nueva.form');
+Route::post('admin/peliculas/nueva', [\App\Http\Controllers\AdminPeliculasController::class, 'nuevaGrabar'])
+    ->name('admin.peliculas.nueva.grabar');
