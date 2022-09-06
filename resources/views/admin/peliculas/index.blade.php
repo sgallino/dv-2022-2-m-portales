@@ -27,13 +27,17 @@
         </thead>
         <tbody>
         @foreach($peliculas as $pelicula)
-        <tr>
-            <td>{{ $pelicula->pelicula_id }}</td>
-            <td>{{ $pelicula->titulo }}</td>
-            <td>$ {{ $pelicula->precio }}</td>
-            <td>{{ $pelicula->fecha_estreno }}</td>
-            <td>Coming Soon&trade;</td>
-        </tr>
+            <tr>
+                <td>{{ $pelicula->pelicula_id }}</td>
+                <td>{{ $pelicula->titulo }}</td>
+                <td>$ {{ $pelicula->precio }}</td>
+                <td>{{ $pelicula->fecha_estreno }}</td>
+                <td>
+                    {{-- Los parámetros de las rutas se pasan con el segundo parámetro de route(). --}}
+                    <a href="{{ route('admin.peliculas.detalle', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-secondary">Ver</a>
+                    <a href="{{ route('admin.peliculas.eliminar.confirmar', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-danger">Eliminar</a>
+                </td>
+            </tr>
         @endforeach
         </tbody>
     </table>

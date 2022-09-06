@@ -34,6 +34,11 @@
             </div>
         </nav>
         <main class="container py-3">
+            {{-- Session es la clase para manejo de sesiones de Laravel. --}}
+            @if(Session::has('statusMessage'))
+                <div class="alert alert-{{ Session::get('statusType') ?? 'info' }} mb-3">{!! Session::get('statusMessage') !!}</div>
+            @endif
+
             {{-- La directiva @yield define un espacio que este archivo va a "ceder" a cualquier otra vista
                 que "extienda" o "herede" de este template.--}}
             @yield('main')

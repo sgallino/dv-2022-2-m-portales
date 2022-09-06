@@ -5,6 +5,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Pelicula
+ *
+ * @property int $pelicula_id
+ * @property string $titulo
+ * @property int $precio
+ * @property string $fecha_estreno
+ * @property string $sinopsis
+ * @property string|null $portada
+ * @property string|null $portada_descripcion
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereFechaEstreno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula wherePeliculaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula wherePortada($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula wherePortadaDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula wherePrecio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereSinopsis($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereTitulo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Pelicula extends Model
 {
     // HasFactory sirve si definimos una clase "Factory" asociada, que son útiles para fines de testing.

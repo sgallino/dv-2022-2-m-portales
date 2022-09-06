@@ -78,10 +78,30 @@ Route::get('quienes-somos', [\App\Http\Controllers\HomeController::class, 'about
  |--------------------------------------------------------------------------
  | Películas
  |--------------------------------------------------------------------------
+ | Algunas rutas, como admin.peliculas.ver, van a necesitar de parámetros en la URL.
+ | Los "parámetros" son segmentos de la URL cuyo valor es dinámico. Por ejemplo, los podemos usar para IDs,
+ | categorías, "slugs", etc.
+ | En Laravel, los parámetros de las rutas se representan con {nombre}.
  */
 Route::get('admin/peliculas', [\App\Http\Controllers\AdminPeliculasController::class, 'index'])
     ->name('admin.peliculas.index');
+
 Route::get('admin/peliculas/nueva', [\App\Http\Controllers\AdminPeliculasController::class, 'nuevaForm'])
     ->name('admin.peliculas.nueva.form');
+
 Route::post('admin/peliculas/nueva', [\App\Http\Controllers\AdminPeliculasController::class, 'nuevaGrabar'])
     ->name('admin.peliculas.nueva.grabar');
+
+// Para que Laravel no confunda esta ruta con la de nueva, podemos pedirle que se asegure de que sea
+// un número el {id}, o podemos mover la ruta después de la ruta de nueva. O ambas.
+Route::get('admin/peliculas/{id}', [\App\Http\Controllers\AdminPeliculasController::class, 'detalle'])
+    ->name('admin.peliculas.detalle')
+//    ->where('id', '[0-9]+');
+    ->whereNumber('id');
+
+Route::get('admin/peliculas/{id}/eliminar', [\App\Http\Controllers\AdminPeliculasController::class, 'eliminarConfirmar'])
+    ->name('admin.peliculas.eliminar.confirmar')
+    ->whereNumber('id');
+Route::post('admin/peliculas/{id}/eliminar', [\App\Http\Controllers\AdminPeliculasController::class, 'eliminarAccion'])
+    ->name('admin.peliculas.eliminar.accion')
+    ->whereNumber('id');
