@@ -29,13 +29,21 @@ return [
     */
 
     'disks' => [
-
+        // El disco "local" está pensado para archivos de uso interno de nuestro proyecto.
+        // Por ejemplo, archivos que queramos usar para su procesamiento pero que no queremos sean de
+        // público acceso para los usuarios. Pueden ser archivos de credenciales, pueden ser archivos
+        // de templates, etc.
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),
             'throw' => false,
         ],
 
+        // El disco "public" está para poder, por defecto, agregar los archivos que queremos que a los
+        // visitantes del sitio puedan acceder.
+        // Por ejemplo, las imágenes.
+        // A esto se debe a que este disco tenga los valores "url" y "visibility" que el disco "local" no
+        // tiene.
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),

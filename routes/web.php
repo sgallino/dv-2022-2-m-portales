@@ -99,6 +99,13 @@ Route::get('admin/peliculas/{id}', [\App\Http\Controllers\AdminPeliculasControll
 //    ->where('id', '[0-9]+');
     ->whereNumber('id');
 
+Route::get('admin/peliculas/{id}/editar', [\App\Http\Controllers\AdminPeliculasController::class, 'editarForm'])
+    ->name('admin.peliculas.editar.form')
+    ->whereNumber('id');
+Route::post('admin/peliculas/{id}/editar', [\App\Http\Controllers\AdminPeliculasController::class, 'editarEjecutar'])
+    ->name('admin.peliculas.editar.ejecutar')
+    ->whereNumber('id');
+
 Route::get('admin/peliculas/{id}/eliminar', [\App\Http\Controllers\AdminPeliculasController::class, 'eliminarConfirmar'])
     ->name('admin.peliculas.eliminar.confirmar')
     ->whereNumber('id');

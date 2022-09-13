@@ -34,7 +34,8 @@
                 <td>{{ $pelicula->fecha_estreno }}</td>
                 <td>
                     {{-- Los parámetros de las rutas se pasan con el segundo parámetro de route(). --}}
-                    <a href="{{ route('admin.peliculas.detalle', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-secondary">Ver</a>
+                    <a href="{{ route('admin.peliculas.detalle', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-primary">Ver</a>
+                    <a href="{{ route('admin.peliculas.editar.form', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-secondary">Editar</a>
                     <a href="{{ route('admin.peliculas.eliminar.confirmar', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-danger">Eliminar</a>
                 </td>
             </tr>

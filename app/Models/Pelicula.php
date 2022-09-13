@@ -50,4 +50,20 @@ class Pelicula extends Model
     // Definimos la lista "blanca" de las propiedades que aceptamos nos cargue de manera masiva cuando hacemos
     // un create/update con Eloquent.
     protected $fillable = ['titulo', 'precio', 'fecha_estreno', 'sinopsis', 'portada', 'portada_descripcion'];
+
+    public const VALIDATE_RULES = [
+//            'titulo' => ['required', 'min:2'],
+        'titulo' => 'required|min:2',
+        'precio' => 'required|numeric|min:0',
+        'fecha_estreno' => 'required',
+    ];
+
+    public const VALIDATE_MESSAGES = [
+        'titulo.required' => 'El título debe llevar un valor.',
+        'titulo.min' => 'El título debe tener al menos :min caracteres.',
+        'precio.required' => 'El precio debe llevar un valor.',
+        'precio.numeric' => 'El precio debe ser un número.',
+        'precio.min' => 'El precio debe ser un valor positivo.',
+        'fecha_estreno.required' => 'La fecha de estreno debe llevar un valor.',
+    ];
 }
