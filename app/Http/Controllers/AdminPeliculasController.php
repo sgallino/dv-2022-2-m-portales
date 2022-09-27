@@ -14,7 +14,24 @@ class AdminPeliculasController extends Controller
         // Esto retorna una Collection que contiene una instancia por cada registro de la tabla.
         // Las Collection son, en esencia, clases "envoltorias" ("wrappers") de arrays, que los extienden
         // con muchos métodos útiles.
-        $peliculas = Pelicula::all();
+//        $peliculas = Pelicula::all();
+        /*
+         |--------------------------------------------------------------------------
+         | Cargando las relaciones en la consulta.
+         |--------------------------------------------------------------------------
+         | El método all() solo sirve para traer todos los registros de una tabla, y
+         | nada más, ni nada menos.
+         | Si queremos agregar cualquiera otra configuración, ya sea carga de
+         | relaciones, condiciones de búsqueda, criterios de ordenamiento, etc, vamos
+         | tener que llamar "get()" en su lugar, pero solo luego de haber puesto las
+         | configuraciones que queremos sumarle.
+         |
+         | Para cargar las relaciones de manera "ansiosa" (eager loading, ver docs:
+         | [https://laravel.com/docs/9.x/eloquent-relationships#eager-loading])
+         | tenemos que usar el método "with()", que recibe un string o array de
+         | strings con los iderntificadores de las relaciones que hay que cargar.
+         */
+        $peliculas = Pelicula::with(['pais'])->get();
 
         // Noten que en la función view() podemos reemplazar las "/" con "." para los directorios.
         // Como vimos la primera clase, las vistas no deberían nunca buscar directamente la información,

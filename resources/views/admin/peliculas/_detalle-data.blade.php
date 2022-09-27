@@ -5,7 +5,8 @@
     <div class="col-4">
 {{--        @if($pelicula->portada != null && file_exists(public_path('imgs/' . $pelicula->portada)))--}}
         @if($pelicula->portada != null && Storage::disk('public')->has('imgs/' . $pelicula->portada))
-            <img src="{{ url('storage/imgs/' . $pelicula->portada) }}" alt="{{ $pelicula->portada_descripcion }}" class="mw-100">
+            {{--<img src="{{ url('storage/imgs/' . $pelicula->portada) }}" alt="{{ $pelicula->portada_descripcion }}" class="mw-100">--}}
+            <img src="{{ Storage::disk('public')->url('imgs/' . $pelicula->portada) }}" alt="{{ $pelicula->portada_descripcion }}" class="mw-100">
         @else
             Acá iría una imagen default.
         @endif

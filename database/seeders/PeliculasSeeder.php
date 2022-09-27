@@ -22,6 +22,7 @@ class PeliculasSeeder extends Seeder
         DB::table('peliculas')->insert([
             [
                 'pelicula_id' => 1,
+                'pais_id' => 1,
                 'titulo' => 'El Señor de la Anillos: La Comunidad del Anillo',
                 'precio' => 1999,
                 'fecha_estreno' => '2000-01-11',
@@ -33,6 +34,7 @@ class PeliculasSeeder extends Seeder
             ],
             [
                 'pelicula_id' => 2,
+                'pais_id' => 2,
                 'titulo' => 'El Discurso del Rey',
                 'precio' => 1799,
                 'fecha_estreno' => '2015-11-20',
@@ -44,6 +46,7 @@ class PeliculasSeeder extends Seeder
             ],
             [
                 'pelicula_id' => 3,
+                'pais_id' => 1,
                 'titulo' => 'La Matrix',
                 'precio' => 2099,
                 'fecha_estreno' => '1998-06-04',

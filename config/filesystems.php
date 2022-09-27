@@ -47,6 +47,8 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
+            // 'url' define cuál es la URL de base a utilizar para la creación de enlaces con la función
+            // Storage::url().
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,

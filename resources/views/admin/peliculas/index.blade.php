@@ -21,6 +21,7 @@
             <th>ID</th>
             <th>Título</th>
             <th>Precio</th>
+            <th>País</th>
             <th>Fecha de estreno</th>
             <th>Acciones</th>
         </tr>
@@ -31,6 +32,7 @@
                 <td>{{ $pelicula->pelicula_id }}</td>
                 <td>{{ $pelicula->titulo }}</td>
                 <td>$ {{ $pelicula->precio }}</td>
+                <td>{{ $pelicula->pais->abreviatura }}</td>
                 <td>{{ $pelicula->fecha_estreno }}</td>
                 <td>
                     {{-- Los parámetros de las rutas se pasan con el segundo parámetro de route(). --}}

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * App\Models\Pelicula
  *
  * @property int $pelicula_id
+ * @property int $pais_id
  * @property string $titulo
  * @property int $precio
  * @property string $fecha_estreno
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $portada_descripcion
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Pais $pais
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula query()
@@ -30,6 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereTitulo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula wherePaisId($value)
  */
 class Pelicula extends Model
 {
@@ -66,4 +69,28 @@ class Pelicula extends Model
         'precio.min' => 'El precio debe ser un valor positivo.',
         'fecha_estreno.required' => 'La fecha de estreno debe llevar un valor.',
     ];
+
+    /*
+     |--------------------------------------------------------------------------
+     | Relaciones
+     |--------------------------------------------------------------------------
+     | Las relaciones las definimos como un método que retorne el tipo de la
+     | relación con su respectiva configuración.
+     | El nombre del método es esencial, porque es el identificador de la
+     | relación. Esto significa que Laravel va a usar ese nombre tanto para la
+     | propiedad para acceder al modelo luego, como para identificarla en ciertas
+     | funcionalidades.
+     |
+     | Por ejemplo, para la relación con la tabla de [paises], podemos crear un
+     | método pais() que retorne una llamada al método "belongsTo".
+     */
+    public function pais()
+    {
+        // belongsTo define la relación de 1:n en la tabla referenciante.
+        // Nos interesan 3 parámetros que puede recibir.
+        // 1. String. El FQN de la clase que representa la tabla relacionada.
+        // 2. Opcional. String. El nombre del campo de la FK.
+        // 3. Opcional. String. El nombre del campo de la PK referenciada.
+        return $this->belongsTo(Pais::class, 'pais_id', 'pais_id');
+    }
 }
