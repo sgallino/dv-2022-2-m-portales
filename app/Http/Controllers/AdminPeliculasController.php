@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use DB;
+use App\Models\Genero;
+use App\Models\Pais;
 use App\Models\Pelicula;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -29,9 +32,9 @@ class AdminPeliculasController extends Controller
          | Para cargar las relaciones de manera "ansiosa" (eager loading, ver docs:
          | [https://laravel.com/docs/9.x/eloquent-relationships#eager-loading])
          | tenemos que usar el método "with()", que recibe un string o array de
-         | strings con los iderntificadores de las relaciones que hay que cargar.
+         | strings con los identificadores de las relaciones que hay que cargar.
          */
-        $peliculas = Pelicula::with(['pais'])->get();
+        $peliculas = Pelicula::with(['pais', 'generos'])->get();
 
         // Noten que en la función view() podemos reemplazar las "/" con "." para los directorios.
         // Como vimos la primera clase, las vistas no deberían nunca buscar directamente la información,
@@ -62,7 +65,10 @@ class AdminPeliculasController extends Controller
 
     public function nuevaForm()
     {
-        return view('admin.peliculas.form-nueva');
+        return view('admin.peliculas.form-nueva', [
+            'paises' => Pais::orderBy('nombre')->get(),
+            'generos' => Genero::orderBy('nombre')->get(),
+        ]);
     }
 
     /*
@@ -131,13 +137,41 @@ class AdminPeliculasController extends Controller
             $data['portada'] = $nombrePortada;
         }
 
-//        echo "<pre>";
-//        print_r($data);
-//        echo "</pre>";
+        /*
+         |--------------------------------------------------------------------------
+         | Géneros (relación de n:m)
+         |--------------------------------------------------------------------------
+         | Géneros tiene una relación de n:m con películas.
+         | Esto implica que desde el form nos estamos enviando un array
+         | ($data['generos']) con todos los ids de los géneros seleccionados por el
+         | usuario.
+         | Por cada id, vamos a tener que insertar un registro en la tabla pivot de
+         | la relación, asociado al id de la película.
+         | Para obtener el id de la película, nos basta con capturar la película
+         | retornada por el create().
+         |
+         | Para manejar el ABM de los géneros, vamos a aprovechar los métodos que
+         | Eloquent nos ofrece para este fin.
+         | https://laravel.com/docs/9.x/eloquent-relationships#updating-many-to-many-relationships
+         | Hay 3 métodos relevantes:
+         | - attach
+         | - detach
+         | - sync
+         |
+         | Los 3 métodos deben invocarse desde el retorno del _método_ de la relación
+         | (que sería "generos()") y no desde la _propiedad_ (que sería generos) de la
+         | misma.
+         |
+         | En el caso del alta, tenemos que usar attach().
+         | Este método recibe un id o array de ids, y los inserta en la tabla pivot
+         | de la relación.
+         */
         // Le pedimos a Eloquent que inserte el registro.
         // El método create() retorna una instancia de la clase con los datos insertados en la base de
         // datos.
         $pelicula = Pelicula::create($data);
+
+        $pelicula->generos()->attach($data['generos'] ?? []);
 
         // Redireccionamos al listado.
         // Al redireccionar, podemos pasar también valores de sesión "flash" con ayuda del método "with".
@@ -154,6 +188,8 @@ class AdminPeliculasController extends Controller
 
         return view('admin.peliculas.form-editar', [
             'pelicula' => $pelicula,
+            'paises' => Pais::orderBy('nombre')->get(),
+            'generos' => Genero::orderBy('nombre')->get(),
         ]);
     }
 
@@ -182,19 +218,73 @@ class AdminPeliculasController extends Controller
             $portadaVieja = $pelicula->portada;
         }
 
-        $pelicula->update($data);
+        /*
+         |--------------------------------------------------------------------------
+         | Géneros (relación n:m)
+         |--------------------------------------------------------------------------
+         | Al editar, nosotros queremos que los géneros que queden relacionados sean
+         | solamente los que estén incluidos en el array de "generos" que pasó el
+         | usuario.
+         |
+         | Cualquier registro asociado que no esté en ese array, debe "desvincularse",
+         | así como cualquiera que falte debe agregarse.
+         |
+         | Esto es precisamente lo que "sync()" hace.
+         | Que al igual que "attach()", debe llamarse desde el _método_ de la relación
+         | ("generos()"), y no desde la _propiedad_ generada a partir de ella ("generos").
+         | También recibe un id o array de ids de los registros que queremos queden
+         | relacionados.
+         */
 
-        // Si había una portada vieja, entonces la eliminamos.
+        /*
+         |--------------------------------------------------------------------------
+         | Transacciones
+         |--------------------------------------------------------------------------
+         | Ahora que estamos ejecutando más de una consulta de ABM en SQL en una
+         | misma petición, es un buen momento de sumar las transacciones.
+         | Las transacciones son un mecanismo de las bases SQL que permiten que las
+         | operaciones primero se realicen solo en memoria, sin escribirse en el
+         | disco.
+         | Esto nos permiten a nosotros decidir luego si queremos mantener ("commit")
+         | esos cambios, o si deben descartarse ("rollback").
+         |
+         | Hay 2 maneras de usar transacciones con Laravel:
+         | 1. La forma "manual".
+         | 2. Usando un "Closure".
+         */
+
+        // Forma 1: "manual".
+        // Esta forma es similar a la que hicimos con PDO. Accedemos directamente a los métodos para
+        // manejar la transacción a través de la clase DB.
+        // TODO: Ver la segunda forma.
+        try {
+            DB::beginTransaction();
+
+            $pelicula->update($data);
+
+            $pelicula->generos()->sync($data['generos'] ?? []);
+
+            // Si había una portada vieja, entonces la eliminamos.
 //        if(isset($portadaVieja) && file_exists(public_path('imgs/' . $portadaVieja))) {
-        // TODO: Actualizar los defaults para Storage, y la ruta en el .env para facilitar los linkeos.
-        if(isset($portadaVieja) && Storage::disk('public')->has('imgs/' . $portadaVieja)) {
-            Storage::disk('public')->delete('imgs/' . $portadaVieja);
-        }
+            if(isset($portadaVieja) && Storage::disk('public')->has('imgs/' . $portadaVieja)) {
+                Storage::disk('public')->delete('imgs/' . $portadaVieja);
+            }
 
-        return redirect()
-            ->route('admin.peliculas.index')
-            ->with('statusType', 'success')
-            ->with('statusMessage', 'La película <b>' . e($pelicula->titulo) . '</b> fue actualizada exitosamente.');
+            DB::commit();;
+
+            return redirect()
+                ->route('admin.peliculas.index')
+                ->with('statusType', 'success')
+                ->with('statusMessage', 'La película <b>' . e($pelicula->titulo) . '</b> fue actualizada exitosamente.');
+        } catch(\Exception $e) {
+            DB::rollBack();
+            return redirect()
+                ->route('admin.peliculas.editar.form', ['id' => $id])
+                ->with('statusType', 'danger')
+                ->with('statusMessage', 'Ocurrió un error inesperado. La película no pudo ser actualizada.')
+                // withInput manda los datos del form para el old().
+                ->withInput();
+        }
     }
 
     public function eliminarConfirmar(int $id)
@@ -208,6 +298,22 @@ class AdminPeliculasController extends Controller
     public function eliminarAccion(int $id)
     {
         $pelicula = Pelicula::findOrFail($id);
+
+        /*
+         |--------------------------------------------------------------------------
+         | Géneros (relación n:m)
+         |--------------------------------------------------------------------------
+         | Para borrar las relaciones de n:m con alguna tabla, tenemos el método
+         | "detach()".
+         | Como sucedía con "attach()" previamente, este método debe ejecutarse desde
+         | el _método_ que retorna la relación ("generos()") y no desde la _propiedad_
+         | generada a partir de ella ("generos").
+         |
+         | "detach()" puede recibir un id o array de ids de los registros de los cuales
+         | queremos remover la relación, o podemos dejarlo sin parámetro para que
+         | elimine todas.
+         */
+        $pelicula->generos()->detach();
 
         $pelicula->delete();
 

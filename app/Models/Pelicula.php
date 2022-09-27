@@ -33,6 +33,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereUpdatedAt($value)
  * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula wherePaisId($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genero[] $generos
+ * @property-read int|null $generos_count
  */
 class Pelicula extends Model
 {
@@ -52,7 +54,7 @@ class Pelicula extends Model
 
     // Definimos la lista "blanca" de las propiedades que aceptamos nos cargue de manera masiva cuando hacemos
     // un create/update con Eloquent.
-    protected $fillable = ['titulo', 'precio', 'fecha_estreno', 'sinopsis', 'portada', 'portada_descripcion'];
+    protected $fillable = ['pais_id', 'titulo', 'precio', 'fecha_estreno', 'sinopsis', 'portada', 'portada_descripcion'];
 
     public const VALIDATE_RULES = [
 //            'titulo' => ['required', 'min:2'],
@@ -92,5 +94,36 @@ class Pelicula extends Model
         // 2. Opcional. String. El nombre del campo de la FK.
         // 3. Opcional. String. El nombre del campo de la PK referenciada.
         return $this->belongsTo(Pais::class, 'pais_id', 'pais_id');
+    }
+
+    public function generos()
+    {
+        // belongsToManu() define una relación de n:m.
+        // Recibe los siguientes parámetros:
+        // 1. String. El FQN de la clase que representa la tabla relacionada.
+        // 2. Opcional. String. El nombre de la tabla pivot.
+        // 3. Opcional. String. El nombre de la FK en la tabla pivot que referencia a la PK de esta tabla.
+        // 4. Opcional. String. El nombre de la FK en la tabla pivot que referencia a la PK de la tabla
+        //  relacionada.
+        // 5. Opcional. String. El nombre de la PK de esta tabla.
+        // 6. Opcional. String. El nombre de la PK de la tabla relacionada.
+        return $this->belongsToMany(
+            Genero::class,
+            'peliculas_tienen_generos',
+            'pelicula_id',
+            'genero_id',
+            'pelicula_id',
+            'genero_id',
+        );
+    }
+
+    /*
+     |--------------------------------------------------------------------------
+     | Métodos
+     |--------------------------------------------------------------------------
+     */
+    public function getGenerosId(): array
+    {
+        return $this->generos->pluck('genero_id')->toArray();
     }
 }

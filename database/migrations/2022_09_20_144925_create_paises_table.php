@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('nombre', 125);
             $table->char('abreviatura', 3)->comment('El código alpha-3 del país según el ISO-3166. Ej: ARG, BRA.');
             $table->timestamps();
+
+            $table->index('nombre');
         });
     }
 

@@ -22,6 +22,7 @@
             <th>Título</th>
             <th>Precio</th>
             <th>País</th>
+            <th>Géneros</th>
             <th>Fecha de estreno</th>
             <th>Acciones</th>
         </tr>
@@ -33,6 +34,22 @@
                 <td>{{ $pelicula->titulo }}</td>
                 <td>$ {{ $pelicula->precio }}</td>
                 <td>{{ $pelicula->pais->abreviatura }}</td>
+                <td>
+                    {{-- Usamos el método de las Collections de Laravel "isNotEmpty" para verificar que haya géneros. --}}
+                    {{--@if($pelicula->generos->isNotEmpty())
+                        @foreach($pelicula->generos as $genero)
+                            <span class="badge bg-secondary">{{ $genero->nombre }}</span>
+                        @endforeach
+                    @else
+                        No especificado.
+                    @endif--}}
+                    {{-- Rescribiendo lo anterior con el bucle @forelse de Blade --}}
+                    @forelse($pelicula->generos as $genero)
+                        <span class="badge bg-secondary">{{ $genero->nombre }}</span>
+                    @empty
+                        No especificado.
+                    @endforelse
+                </td>
                 <td>{{ $pelicula->fecha_estreno }}</td>
                 <td>
                     {{-- Los parámetros de las rutas se pasan con el segundo parámetro de route(). --}}

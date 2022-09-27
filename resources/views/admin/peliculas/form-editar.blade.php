@@ -4,6 +4,15 @@
 // Al existir siempre, no necesitamos estar preguntando si la variable existe a la hora de usarla.
 /** @var \Illuminate\Support\ViewErrorBag $errors */
 /** @var \App\Models\Pelicula $pelicula */
+/** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Pais[] $paises */
+
+// Ejemplo de cómo obtener los ids de los géneros de la película.
+// Como solo tenemos una Collection con los modelos de los géneros, vamos a usar el método "pluck" de
+// las Collections para pedir que solo nos retorne el "genero_id" de cada ítem.
+// Finalmente, lo pedimos como un array puro usando "toArray()".
+//echo "<pre>";
+//print_r($pelicula->generos->pluck('genero_id')->toArray());
+//echo "</pre>";
 ?>
 @extends('layouts.main')
 
@@ -51,6 +60,29 @@
                 {{-- Dentro de la directiva error, Laravel provee de una varible "$message" con el primer
                  mensaje de error. --}}
                 <p class="text-danger" id="error-precio">{{ $message }}</p>
+            @enderror
+        </div>
+        <div class="mb-3">
+            <label for="pais_id" class="form-label">País de Origen</label>
+            <select
+                id="pais_id"
+                name="pais_id"
+                class="form-control"
+                @error('pais_id') aria-describedby="error-pais_id" @enderror
+            >
+                @foreach($paises as $pais)
+                    <option
+                        value="{{ $pais->pais_id }}"
+                        {{--                    @if($pais->pais_id == old('pais_id')) selected @endif--}}
+                        {{-- Usamos la directiva @selected para reemplazar el if. --}}
+                        @selected($pais->pais_id == old('pais_id', $pelicula->pais_id))
+                    >
+                        {{ $pais->nombre }}
+                    </option>
+                @endforeach
+            </select>
+            @error('pais_id')
+            <p class="text-danger" id="error-pais_id">{{ $message }}</p>
             @enderror
         </div>
         <div class="mb-3">
@@ -105,6 +137,26 @@
                 value="{{ old('portada_descripcion', $pelicula->portada_descripcion) }}"
             >
         </div>
+
+        <fieldset class="mb-3">
+            <legend>Géneros</legend>
+
+            @foreach($generos as $genero)
+                <div class="form-check form-check-inline">
+                    <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="genero-{{ $genero->genero_id }}"
+                        name="generos[]"
+                        value="{{ $genero->genero_id }}"
+{{--                        @checked(in_array($genero->genero_id, old('generos', $pelicula->generos->pluck('genero_id')->toArray())))--}}
+                        @checked(in_array($genero->genero_id, old('generos', $pelicula->getGenerosId())))
+                    >
+                    <label for="genero-{{ $genero->genero_id }}" class="form-check-label">{{ $genero->nombre }}</label>
+                </div>
+            @endforeach
+        </fieldset>
+
         <button class="btn btn-primary" type="submit">Actualizar</button>
     </form>
 @endsection
