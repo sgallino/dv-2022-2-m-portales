@@ -76,39 +76,59 @@ Route::get('quienes-somos', [\App\Http\Controllers\HomeController::class, 'about
 
 /*
  |--------------------------------------------------------------------------
+ | Autenticación
+ |--------------------------------------------------------------------------
+ */
+Route::get('iniciar-sesion', [\App\Http\Controllers\AuthController::class, 'loginForm'])
+    ->name('auth.login.form');
+Route::post('iniciar-sesion', [\App\Http\Controllers\AuthController::class, 'loginEjecutar'])
+    ->name('auth.login.ejecutar');
+Route::post('cerrar-sesion', [\App\Http\Controllers\AuthController::class, 'logout'])
+    ->name('auth.logout');
+
+/*
+ |--------------------------------------------------------------------------
  | Películas
  |--------------------------------------------------------------------------
  | Algunas rutas, como admin.peliculas.ver, van a necesitar de parámetros en la URL.
  | Los "parámetros" son segmentos de la URL cuyo valor es dinámico. Por ejemplo, los podemos usar para IDs,
  | categorías, "slugs", etc.
  | En Laravel, los parámetros de las rutas se representan con {nombre}.
+ |
+ | Si múltiples rutas, como en este caso, requieren configuraciones comunes (ej: qué controller usar,
+ | qué middlewares usar, etc), podemos simplificar sus declaraciones usando un "grupo" de rutas.
  */
-Route::get('admin/peliculas', [\App\Http\Controllers\AdminPeliculasController::class, 'index'])
-    ->name('admin.peliculas.index');
+Route::middleware('auth')
+    ->controller(\App\Http\Controllers\AdminPeliculasController::class)
+    ->group(function() {
+        // Como definimos el controller en el grupo, solo aclaramos el nombre del método en la ruta.
+        Route::get('admin/peliculas', 'index')
+            ->name('admin.peliculas.index');
 
-Route::get('admin/peliculas/nueva', [\App\Http\Controllers\AdminPeliculasController::class, 'nuevaForm'])
-    ->name('admin.peliculas.nueva.form');
+        Route::get('admin/peliculas/nueva', 'nuevaForm')
+            ->name('admin.peliculas.nueva.form');
 
-Route::post('admin/peliculas/nueva', [\App\Http\Controllers\AdminPeliculasController::class, 'nuevaGrabar'])
-    ->name('admin.peliculas.nueva.grabar');
+        Route::post('admin/peliculas/nueva', 'nuevaGrabar')
+            ->name('admin.peliculas.nueva.grabar');
 
-// Para que Laravel no confunda esta ruta con la de nueva, podemos pedirle que se asegure de que sea
-// un número el {id}, o podemos mover la ruta después de la ruta de nueva. O ambas.
-Route::get('admin/peliculas/{id}', [\App\Http\Controllers\AdminPeliculasController::class, 'detalle'])
-    ->name('admin.peliculas.detalle')
-//    ->where('id', '[0-9]+');
-    ->whereNumber('id');
+        // Para que Laravel no confunda esta ruta con la de nueva, podemos pedirle que se asegure de que sea
+        // un número el {id}, o podemos mover la ruta después de la ruta de nueva. O ambas.
+        Route::get('admin/peliculas/{id}', 'detalle')
+            ->name('admin.peliculas.detalle')
+        //    ->where('id', '[0-9]+');
+            ->whereNumber('id');
 
-Route::get('admin/peliculas/{id}/editar', [\App\Http\Controllers\AdminPeliculasController::class, 'editarForm'])
-    ->name('admin.peliculas.editar.form')
-    ->whereNumber('id');
-Route::post('admin/peliculas/{id}/editar', [\App\Http\Controllers\AdminPeliculasController::class, 'editarEjecutar'])
-    ->name('admin.peliculas.editar.ejecutar')
-    ->whereNumber('id');
+        Route::get('admin/peliculas/{id}/editar', 'editarForm')
+            ->name('admin.peliculas.editar.form')
+            ->whereNumber('id');
+        Route::post('admin/peliculas/{id}/editar', 'editarEjecutar')
+            ->name('admin.peliculas.editar.ejecutar')
+            ->whereNumber('id');
 
-Route::get('admin/peliculas/{id}/eliminar', [\App\Http\Controllers\AdminPeliculasController::class, 'eliminarConfirmar'])
-    ->name('admin.peliculas.eliminar.confirmar')
-    ->whereNumber('id');
-Route::post('admin/peliculas/{id}/eliminar', [\App\Http\Controllers\AdminPeliculasController::class, 'eliminarAccion'])
-    ->name('admin.peliculas.eliminar.accion')
-    ->whereNumber('id');
+        Route::get('admin/peliculas/{id}/eliminar', 'eliminarConfirmar')
+            ->name('admin.peliculas.eliminar.confirmar')
+            ->whereNumber('id');
+        Route::post('admin/peliculas/{id}/eliminar', 'eliminarAccion')
+            ->name('admin.peliculas.eliminar.accion')
+            ->whereNumber('id');
+    });

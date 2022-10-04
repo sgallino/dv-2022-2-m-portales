@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -114,6 +115,57 @@ class Pelicula extends Model
             'genero_id',
             'pelicula_id',
             'genero_id',
+        );
+    }
+
+    /*
+     |--------------------------------------------------------------------------
+     | Accessors & Mutators
+     |--------------------------------------------------------------------------
+     | Para definir los accesors y mutators, vamos a ver que Laravel usa dos
+     | herramientas de php relativamente nuevas:
+     | 1. "Named arguments/parameters".
+     | 2. "Arrow functions".
+     |
+     | Los "named arguments" (https://www.php.net/manual/en/functions.arguments.php)
+     | permiten que al momento de ejecutar una función, en vez de pasar los
+     | argumentos según el _orden_ en que están pidiéndose, los pasamos aclarando
+     | el _nombre_ del parámetro al que el argumento corresponde.
+     | Por ejemplo, supongamos la función setcookie() de php.
+     | Esta función recibe 7 posibles argumentos:
+     |  - name, value, expires_or_options, path, domain, secure, httponly
+     | Si nosotros queremos setear una cookie con solo el nombre, el valor y que
+     | sea httponly, normalmente requeriría usar los 7 argumentos, poniendo los 4
+     | intermedios con sus valores por defecto a mano. Tipo:
+     |  setcookie('nombre', 'valor', 0, '', '', false, true);
+     | Toda la porción de "0, '', '', false, " es relleno necesario para cumplir
+     | con la cantidad de argumentos. Sin mencionar que puede ser confuso qué valor
+     | corresponde a qué parámetro.
+     | Usando "named arguments", en cambio, podemos aclarar a qué parámetros le
+     | pasamos cada valor. Cualquiera no mencionado, queda con su valor default.
+     | Con setcookie, esto quedaría:
+     |  setcookie(name: 'nombre', value: 'valor', httponly: true);
+     |
+     | Las "arrow functions", por su parte, son similares a las de JS en su sintaxis,
+     | pero tienen notables diferencias en su función en php. A saber:
+     | - Tienen acceso a todas las variables de la función contenedora, sin necesidad
+     |  de "pasarlas" con el "use".
+     | - No pueden tener cuerpo, es decir, no llevan llaves.
+     | - Solo pueden ejecutar una instrucción y retornar el valor.
+     | La sintaxis es:
+     |  fn (argumentos) => operación
+     */
+    protected function precio(): Attribute
+    {
+        return Attribute::make(
+            // Al leerlo, transformamos de centavos a dólares.
+            get: fn ($value) => $value / 100,
+            // Esta arrow function es equivalente a escribir:
+//            get: function($value) {
+//                return $value / 100;
+//            },
+            // Al asignarlo, transformamos de dólares a centavos.
+            set: fn ($value) => $value * 100,
         );
     }
 

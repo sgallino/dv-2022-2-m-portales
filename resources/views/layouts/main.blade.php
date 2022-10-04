@@ -26,9 +26,27 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('quienes-somos') }}">Quiénes somos</a>
                         </li>
+                        {{-- El método "check()" de Auth retorna true si el usuario está autenticado. --}}
+                        {{--@if(Auth::check())--}}
+                        {{-- Podemos también usar las directivas de Blade para este fin. --}}
+                        @auth
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('admin.peliculas.index') }}">Administrar Películas</a>
                         </li>
+                        <li class="nav-item">
+                            <form action="{{ route('auth.logout') }}" method="post">
+                                @csrf
+                                <button class="btn nav-link" type="submit">Cerrar Sesión</button>
+                            </form>
+                        </li>
+                        {{--@else--}}
+                        {{-- Si es, en cambio, un "invitado"... --}}
+                        @else
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('auth.login.form') }}">Iniciar Sesión</a>
+                        </li>
+                        @endauth
+                        {{--@endif--}}
                     </ul>
                 </div>
             </div>

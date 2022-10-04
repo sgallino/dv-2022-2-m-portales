@@ -169,17 +169,28 @@ class AdminPeliculasController extends Controller
         // Le pedimos a Eloquent que inserte el registro.
         // El método create() retorna una instancia de la clase con los datos insertados en la base de
         // datos.
-        $pelicula = Pelicula::create($data);
+        try {
+            DB::transaction(function() use ($data) {
+                $pelicula = Pelicula::create($data);
+                $pelicula->generos()->attach($data['generos'] ?? []);
+            });
 
-        $pelicula->generos()->attach($data['generos'] ?? []);
-
-        // Redireccionamos al listado.
-        // Al redireccionar, podemos pasar también valores de sesión "flash" con ayuda del método "with".
-        return redirect()
-            ->route('admin.peliculas.index')
-            ->with('statusType', 'success')
-            ->with('statusMessage', 'La película <b>' . e($pelicula->titulo) . '</b> fue creada exitosamente.');
+            // Redireccionamos al listado.
+            // Al redireccionar, podemos pasar también valores de sesión "flash" con ayuda del método "with".
+            return redirect()
+                ->route('admin.peliculas.index')
+                ->with('statusType', 'success')
+                ->with('statusMessage', 'La película <b>' . e($data['titulo']) . '</b> fue creada exitosamente.');
 //            ->with('status', ['type' => 'success', 'message' => 'La película "' . $data['titulo'] . '" fue creada con éxito.']);
+        } catch(\Exception $e) {
+            return redirect()
+                ->route('admin.peliculas.nueva.form')
+                ->with('statusType', 'danger')
+                ->with('statusMessage', 'Ocurrió un error inesperado. La película no pudo ser creada.')
+                // withInput manda los datos del form para el old().
+                ->withInput();
+        }
+
     }
 
     public function editarForm(int $id)
@@ -256,8 +267,7 @@ class AdminPeliculasController extends Controller
         // Forma 1: "manual".
         // Esta forma es similar a la que hicimos con PDO. Accedemos directamente a los métodos para
         // manejar la transacción a través de la clase DB.
-        // TODO: Ver la segunda forma.
-        try {
+        /*try {
             DB::beginTransaction();
 
             $pelicula->update($data);
@@ -278,6 +288,36 @@ class AdminPeliculasController extends Controller
                 ->with('statusMessage', 'La película <b>' . e($pelicula->titulo) . '</b> fue actualizada exitosamente.');
         } catch(\Exception $e) {
             DB::rollBack();
+            return redirect()
+                ->route('admin.peliculas.editar.form', ['id' => $id])
+                ->with('statusType', 'danger')
+                ->with('statusMessage', 'Ocurrió un error inesperado. La película no pudo ser actualizada.')
+                // withInput manda los datos del form para el old().
+                ->withInput();
+        }*/
+
+        // Forma 2: Usando el método transaction y Closures.
+        try {
+            // En las funciones anónimas/Closures, podemos acceder a las variables de su función contenedora
+            // (bien al estilo JS), pero solo si le avisamos a php qué variables son las que queremos tener
+            // disponibles.
+            // Esto lo logramos con la cláusula "use".
+            DB::transaction(function() use ($pelicula, $data) {
+                $pelicula->update($data);
+                $pelicula->generos()->sync($data['generos'] ?? []);
+            });
+
+            // Si había una portada vieja, entonces la eliminamos.
+//        if(isset($portadaVieja) && file_exists(public_path('imgs/' . $portadaVieja))) {
+            if(isset($portadaVieja) && Storage::disk('public')->has('imgs/' . $portadaVieja)) {
+                Storage::disk('public')->delete('imgs/' . $portadaVieja);
+            }
+
+            return redirect()
+                ->route('admin.peliculas.index')
+                ->with('statusType', 'success')
+                ->with('statusMessage', 'La película <b>' . e($pelicula->titulo) . '</b> fue actualizada exitosamente.');
+        } catch(\Exception $e) {
             return redirect()
                 ->route('admin.peliculas.editar.form', ['id' => $id])
                 ->with('statusType', 'danger')
@@ -313,13 +353,23 @@ class AdminPeliculasController extends Controller
          | queremos remover la relación, o podemos dejarlo sin parámetro para que
          | elimine todas.
          */
-        $pelicula->generos()->detach();
+        try {
+            DB::transaction(function() use ($pelicula) {
+                $pelicula->generos()->detach();
+                $pelicula->delete();
+            });
 
-        $pelicula->delete();
-
-        return redirect()
-            ->route('admin.peliculas.index')
-            ->with('statusType', 'success')
-            ->with('statusMessage', 'La película <b>' . e($pelicula->titulo) . '</b> fue eliminada exitosamente.');
+            return redirect()
+                ->route('admin.peliculas.index')
+                ->with('statusType', 'success')
+                ->with('statusMessage', 'La película <b>' . e($pelicula->titulo) . '</b> fue eliminada exitosamente.');
+        } catch(\Exception $e) {
+            return redirect()
+                ->route('admin.peliculas.eliminar.confirmar', ['id' => $id])
+                ->with('statusType', 'danger')
+                ->with('statusMessage', 'Ocurrió un error inesperado. La película no pudo ser eliminada.')
+                // withInput manda los datos del form para el old().
+                ->withInput();
+        }
     }
 }
