@@ -36,7 +36,7 @@
                         <li class="nav-item">
                             <form action="{{ route('auth.logout') }}" method="post">
                                 @csrf
-                                <button class="btn nav-link" type="submit">Cerrar Sesión</button>
+                                <button class="btn nav-link" type="submit">Cerrar Sesión ({{ \Illuminate\Support\Facades\Auth::user()->email }})</button>
                             </form>
                         </li>
                         {{--@else--}}

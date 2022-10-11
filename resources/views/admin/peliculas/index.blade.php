@@ -23,6 +23,7 @@
             <th>Precio</th>
             <th>País</th>
             <th>Géneros</th>
+            <th>Categoría</th>
             <th>Fecha de estreno</th>
             <th>Acciones</th>
         </tr>
@@ -50,6 +51,7 @@
                         No especificado.
                     @endforelse
                 </td>
+                <td>{{ $pelicula->categoria->abreviatura }}</td>
                 <td>{{ $pelicula->fecha_estreno }}</td>
                 <td>
                     {{-- Los parámetros de las rutas se pasan con el segundo parámetro de route(). --}}

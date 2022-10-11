@@ -26,6 +26,11 @@ class Kernel extends HttpKernel
     /**
      * The application's route middleware groups.
      *
+     * Estos grupos pueden aplicarse como un middleware a cada ruta.
+     * Laravel incluye 2 por defecto, que los usa para las rutas del archivo [web.php] y [api.php]
+     * respectivamente.
+     * La asignación de estos grupos la pueden ver en el archivo de [App\Providers\RouteServiceProvider].
+     *
      * @var array<string, array<int, class-string|string>>
      */
     protected $middlewareGroups = [
@@ -63,5 +68,6 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'mayor.18' => \App\Http\Middleware\RequerirMayoriaDeEdad::class,
     ];
 }

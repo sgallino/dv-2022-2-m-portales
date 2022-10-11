@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property int $pelicula_id
  * @property int $pais_id
+ * @property int $categoria_id
  * @property string $titulo
  * @property int $precio
  * @property string $fecha_estreno
@@ -20,6 +21,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Pais $pais
+ * @property-read \App\Models\Categoria $categoria
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genero[] $generos
+ * @property-read int|null $generos_count
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula query()
@@ -32,10 +36,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereSinopsis($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereTitulo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereUpdatedAt($value)
- * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula wherePaisId($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genero[] $generos
- * @property-read int|null $generos_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereCategoriaId($value)
+ * @mixin \Eloquent
  */
 class Pelicula extends Model
 {
@@ -116,6 +119,11 @@ class Pelicula extends Model
             'pelicula_id',
             'genero_id',
         );
+    }
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'categoria_id', 'categoria_id');
     }
 
     /*

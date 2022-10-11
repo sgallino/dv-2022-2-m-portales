@@ -115,6 +115,7 @@ Route::middleware('auth')
         // un número el {id}, o podemos mover la ruta después de la ruta de nueva. O ambas.
         Route::get('admin/peliculas/{id}', 'detalle')
             ->name('admin.peliculas.detalle')
+            ->middleware('mayor.18')
         //    ->where('id', '[0-9]+');
             ->whereNumber('id');
 
@@ -132,3 +133,10 @@ Route::middleware('auth')
             ->name('admin.peliculas.eliminar.accion')
             ->whereNumber('id');
     });
+
+Route::get('admin/peliculas/{id}/confirmar-edad', [\App\Http\Controllers\ConfirmarEdadController::class, 'mostrarForm'])
+    ->middleware('auth')
+    ->name('peliculas.confirmar-edad.form');
+Route::post('admin/peliculas/{id}/confirmar-edad', [\App\Http\Controllers\ConfirmarEdadController::class, 'confirmarEdad'])
+    ->middleware('auth')
+    ->name('peliculas.confirmar-edad.ejecutar');
