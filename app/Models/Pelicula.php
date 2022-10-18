@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Pelicula
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $portada_descripcion
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\Pais $pais
  * @property-read \App\Models\Categoria $categoria
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genero[] $generos
@@ -38,6 +40,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula wherePaisId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereCategoriaId($value)
+ * @method static \Illuminate\Database\Query\Builder|Pelicula onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Pelicula whereDeletedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|Pelicula withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Pelicula withoutTrashed()
  * @mixin \Eloquent
  */
 class Pelicula extends Model
@@ -45,6 +51,9 @@ class Pelicula extends Model
     // HasFactory sirve si definimos una clase "Factory" asociada, que son útiles para fines de testing.
     // Como no vamos a estar usando testing por ahora, la podemos comentar.
 //    use HasFactory;
+    // El trait "SoftDeletes" habilita a Eloquent a hacer borrados "lógicos" (soft delete) de los registros.
+    // Esto es, no eliminarlos, sino marcarlos como eliminados en una columna "deleted_at".
+    use SoftDeletes;
 
     // Por defecto, Laravel supone que el nombre de la tabla asociada al modelo es el mismo nombre que la
     // clase, en minúsculas y en plural (del inglés).

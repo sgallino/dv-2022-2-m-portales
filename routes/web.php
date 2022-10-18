@@ -105,6 +105,9 @@ Route::middleware('auth')
         Route::get('admin/peliculas', 'index')
             ->name('admin.peliculas.index');
 
+        Route::get('admin/peliculas/papelera', 'papelera')
+            ->name('admin.peliculas.papelera');
+
         Route::get('admin/peliculas/nueva', 'nuevaForm')
             ->name('admin.peliculas.nueva.form');
 
@@ -131,6 +134,14 @@ Route::middleware('auth')
             ->whereNumber('id');
         Route::post('admin/peliculas/{id}/eliminar', 'eliminarAccion')
             ->name('admin.peliculas.eliminar.accion')
+            ->whereNumber('id');
+
+        Route::post('admin/peliculas/{id}/reservar', [\App\Http\Controllers\ReservarPeliculaController::class, 'reservar'])
+            ->name('peliculas.reservar')
+            ->whereNumber('id');
+
+        Route::post('admin/peliculas/{id}/restablecer', 'restablecerEjecutar')
+            ->name('admin.peliculas.restablecer.ejecutar')
             ->whereNumber('id');
     });
 

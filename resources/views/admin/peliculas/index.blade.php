@@ -2,6 +2,7 @@
 // Es una práctica común querer documentar con phpDoc en la vista qué variables van a estar disponibles,
 // siendo inyectadas desde el controller.
 /** @var \Illuminate\Database\Eloquent\Collection|\App\Models\Pelicula[] $peliculas */
+/** @var array $searchParams */
 ?>
 @extends('layouts.main')
 
@@ -13,9 +14,26 @@
     <div class="mb-3">
         {{-- Incluimos la URL de la ruta a partir del nombre asociado a ella, con la función route(). --}}
         <a href="{{ route('admin.peliculas.nueva.form') }}">Crear una nueva película</a>
+        <a href="{{ route('admin.peliculas.papelera') }}">Ver películas eliminadas</a>
     </div>
 
-    <table class="table table-bordered table-striped">
+    <section class="mb-5">
+        <h2 class="mb-2">Buscar</h2>
+
+        <form action="{{ route('admin.peliculas.index') }}" method="get">
+            <div class="mb-2">
+                <label for="b-titulo" class="form-label">Título</label>
+                <input type="search" id="b-titulo" name="titulo" class="form-control" value="{{ $searchParams['titulo'] ?? '' }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+    </section>
+
+    @if($searchParams['titulo'])
+        <p class="mb-3">Mostrando las películas con títulos que contengan el término '<b>{{ $searchParams['titulo'] }}</b>'</p>
+    @endif
+
+    <table class="table table-bordered table-striped mb-3">
         <thead>
         <tr>
             <th>ID</th>
@@ -55,12 +73,18 @@
                 <td>{{ $pelicula->fecha_estreno }}</td>
                 <td>
                     {{-- Los parámetros de las rutas se pasan con el segundo parámetro de route(). --}}
-                    <a href="{{ route('admin.peliculas.detalle', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-primary">Ver</a>
-                    <a href="{{ route('admin.peliculas.editar.form', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-secondary">Editar</a>
-                    <a href="{{ route('admin.peliculas.eliminar.confirmar', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-danger">Eliminar</a>
+                    <a href="{{ route('admin.peliculas.detalle', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-primary mb-2">Ver</a>
+                    <a href="{{ route('admin.peliculas.editar.form', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-secondary mb-2">Editar</a>
+                    <a href="{{ route('admin.peliculas.eliminar.confirmar', ['id' => $pelicula->pelicula_id]) }}" class="btn btn-danger mb-2">Eliminar</a>
+                    <form action="{{ route('peliculas.reservar', ['id' => $pelicula->pelicula_id]) }}" method="post">
+                        @csrf
+                        <button type="submit" class="btn btn-warning">Reservar</button>
+                    </form>
                 </td>
             </tr>
         @endforeach
         </tbody>
     </table>
+
+    {{ $peliculas->links() }}
 @endsection

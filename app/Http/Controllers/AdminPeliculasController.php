@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminPeliculasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Traemos todas las películas usando el método "all()" de Eloquent.
         // Esto retorna una Collection que contiene una instancia por cada registro de la tabla.
@@ -34,7 +34,29 @@ class AdminPeliculasController extends Controller
          | tenemos que usar el método "with()", que recibe un string o array de
          | strings con los identificadores de las relaciones que hay que cargar.
          */
-        $peliculas = Pelicula::with(['pais', 'generos'])->get();
+        $peliculasBuilder = Pelicula::with(['pais', 'generos', 'categoria']);
+
+        /*
+         |--------------------------------------------------------------------------
+         | Buscador
+         |--------------------------------------------------------------------------
+         | Para buscar, vamos a necesitar separar lo que es el llamado al método de
+         | ejecucion (get o paginate), de la preparación del query. Esto nos va a
+         | permitir poder agregar libremente todos los requerimientos que necesitemos
+         | que el query cumpla.
+         |
+         | Los datos del formulario los vamos a pedir a la clase Request, usando el
+         | método query(), para obtener datos del "query string".
+         */
+        $searchParams = [
+            'titulo' => $request->query('titulo') ?? null,
+        ];
+
+        if($searchParams['titulo']) {
+            $peliculasBuilder->where('titulo', 'LIKE', '%' . $searchParams['titulo'] . '%');
+        }
+
+        $peliculas = $peliculasBuilder->paginate(2)->withQueryString(); // withQueryString agrega los parámetros del query string a la páginación.
 
         // Noten que en la función view() podemos reemplazar las "/" con "." para los directorios.
         // Como vimos la primera clase, las vistas no deberían nunca buscar directamente la información,
@@ -42,6 +64,15 @@ class AdminPeliculasController extends Controller
         // En Laravel, hacemos esto pasando como segundo parámetro un array asociativo, donde las claves
         // van a ser los nombres de las variables que se creen en la vista.
         return view('admin.peliculas.index', [
+            'peliculas' => $peliculas,
+            'searchParams' => $searchParams,
+        ]);
+    }
+
+    public function papelera()
+    {
+        $peliculas = Pelicula::onlyTrashed()->with(['pais', 'generos', 'categoria'])->get();
+        return view('admin.peliculas.papelera', [
             'peliculas' => $peliculas,
         ]);
     }
@@ -355,14 +386,20 @@ class AdminPeliculasController extends Controller
          */
         try {
             DB::transaction(function() use ($pelicula) {
-                $pelicula->generos()->detach();
+//                $pelicula->generos()->detach(); // Si hacemos un soft delete, no necesitamos borrar los géneros asociados.
                 $pelicula->delete();
             });
 
             return redirect()
                 ->route('admin.peliculas.index')
                 ->with('statusType', 'success')
-                ->with('statusMessage', 'La película <b>' . e($pelicula->titulo) . '</b> fue eliminada exitosamente.');
+                ->with('statusMessage', 'La película <b>' . e($pelicula->titulo) . '</b> fue eliminada exitosamente.')
+                ->with('statusAction', [
+                    'route' => route('admin.peliculas.restablecer.ejecutar', ['id' => $pelicula->pelicula_id]),
+                    'form' => true,
+                    'method' => 'post',
+                    'buttonText' => 'Deshacer',
+                ]);
         } catch(\Exception $e) {
             return redirect()
                 ->route('admin.peliculas.eliminar.confirmar', ['id' => $id])
@@ -371,5 +408,22 @@ class AdminPeliculasController extends Controller
                 // withInput manda los datos del form para el old().
                 ->withInput();
         }
+    }
+
+    public function restablecerEjecutar(int $id)
+    {
+        // Restablece la película que "eliminamos" con un soft delete.
+        // Primero, buscamos la película. Como al estar "eliminada" Eloquent normalmente la va a ignorar,
+        // tenemos que pedirle específicamente que busque las películas eliminadas.
+        // "withTrashed()" indica que queremos incluir en la búsqueda las películas eliminar.
+        // "onlyTrashed()" indica que solo queremos buscar en las películas eliminadas.
+        // Para restablecerla, usamos el método "restore".
+        $pelicula = Pelicula::onlyTrashed()->findOrFail($id);
+        $pelicula->restore();
+
+        return redirect()
+            ->route('admin.peliculas.index')
+            ->with('statusType', 'success')
+            ->with('statusMessage', 'La película <b>' . $pelicula->titulo . '</b> fue restablecida correctamente.');
     }
 }

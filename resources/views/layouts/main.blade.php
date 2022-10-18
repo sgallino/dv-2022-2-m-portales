@@ -54,7 +54,17 @@
         <main class="container py-3">
             {{-- Session es la clase para manejo de sesiones de Laravel. --}}
             @if(Session::has('statusMessage'))
-                <div class="alert alert-{{ Session::get('statusType') ?? 'info' }} mb-3">{!! Session::get('statusMessage') !!}</div>
+                <div class="alert alert-{{ Session::get('statusType') ?? 'info' }} mb-3">
+                    {!! Session::get('statusMessage') !!}
+                    @if(Session::has('statusAction'))
+                        <hr>
+                        {{-- TODO: Preguntar si es un form o un link lo que hay que agregar. --}}
+                        <form action="{{ Session::get('statusAction')['route'] }}" method="{{ Session::get('statusAction')['method'] }}">
+                            @csrf
+                            <button class="btn" type="submit">{{ Session::get('statusAction')['buttonText'] }}</button>
+                        </form>
+                    @endif
+                </div>
             @endif
 
             {{-- La directiva @yield define un espacio que este archivo va a "ceder" a cualquier otra vista
