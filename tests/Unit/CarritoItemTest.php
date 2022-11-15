@@ -202,12 +202,12 @@ class CarritoItemTest extends TestCase
     /**
      * @dataProvider peliculaDataProvider
      */
-    public function test_puedo_obtener_el_subtotal_de_un_item(int $id, int $precio, int $cantidad, int $esprado)
+    public function test_puedo_obtener_el_subtotal_de_un_item(int $id, int $precio, int $cantidad, int $esperado)
     {
         $pelicula = $this->makePelicula($id, $precio);
         $item = new CarritoItem($pelicula, $cantidad);
 
-        $this->assertEquals($esprado, $item->getSubtotal());
+        $this->assertEquals($esperado, $item->getSubtotal());
     }
 
     public function peliculaDataProvider(): array
