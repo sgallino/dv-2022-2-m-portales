@@ -31,6 +31,11 @@ class Carrito
         }
     }
 
+    public function vaciar()
+    {
+        $this->items = [];
+    }
+
     public function incrementarCantidad($item)
     {
         $searchItem = $this->getItem($item->getProducto()->pelicula_id);
@@ -45,6 +50,17 @@ class Carrito
         if(!$searchedItem) return;
 
         $searchedItem->setCantidad($cantidad);
+    }
+
+    public function getTotal(): int
+    {
+        $total = 0;
+
+        foreach($this->items as $item) {
+            $total += $item->getSubtotal();
+        }
+
+        return $total;
     }
 
     public function getItem(int $id): ?CarritoItem

@@ -67,7 +67,7 @@ class Pelicula extends Model
 
     // Definimos la lista "blanca" de las propiedades que aceptamos nos cargue de manera masiva cuando hacemos
     // un create/update con Eloquent.
-    protected $fillable = ['pais_id', 'titulo', 'precio', 'fecha_estreno', 'sinopsis', 'portada', 'portada_descripcion'];
+    protected $fillable = ['pais_id', 'categoria_id', 'titulo', 'precio', 'fecha_estreno', 'sinopsis', 'portada', 'portada_descripcion'];
 
     public const VALIDATE_RULES = [
 //            'titulo' => ['required', 'min:2'],

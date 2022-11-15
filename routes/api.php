@@ -17,3 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/peliculas', [\App\Http\Controllers\API\PeliculasController::class, 'list']);
+Route::get('/peliculas/{id}', [\App\Http\Controllers\API\PeliculasController::class, 'get']);
+Route::post('/peliculas', [\App\Http\Controllers\API\PeliculasController::class, 'create']);
