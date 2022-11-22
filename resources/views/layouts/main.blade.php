@@ -75,6 +75,8 @@
             <p>Da Vinci &copy; 2022</p>
         </footer>
     </div>
+
+    @stack('js')
 </body>
 </html>
 

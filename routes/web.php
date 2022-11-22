@@ -151,3 +151,16 @@ Route::get('admin/peliculas/{id}/confirmar-edad', [\App\Http\Controllers\Confirm
 Route::post('admin/peliculas/{id}/confirmar-edad', [\App\Http\Controllers\ConfirmarEdadController::class, 'confirmarEdad'])
     ->middleware('auth')
     ->name('peliculas.confirmar-edad.ejecutar');
+
+
+/*
+ |--------------------------------------------------------------------------
+ | MercadoPago
+ |--------------------------------------------------------------------------
+ */
+Route::get('mp/test', [\App\Http\Controllers\MPController::class, 'showForm']);
+Route::get('mp/test/v2', [\App\Http\Controllers\MPController::class, 'showFormUsingPaymentManager']);
+
+Route::get('mp/success', [\App\Http\Controllers\MPController::class, 'success'])->name('mp.success');
+Route::get('mp/pending', [\App\Http\Controllers\MPController::class, 'pending'])->name('mp.pending');
+Route::get('mp/failure', [\App\Http\Controllers\MPController::class, 'failure'])->name('mp.failure');
